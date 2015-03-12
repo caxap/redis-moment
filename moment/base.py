@@ -172,7 +172,6 @@ class BaseDay(Base, MixinPeriod):
         self.set_period(year, month, day)
 
     def set_period(self, year=None, month=None, day=None):
-        print year, month, day
         now = datetime.utcnow()
         self.year = not_none(year, now.year)
         self.month = not_none(month, now.month)

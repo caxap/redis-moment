@@ -12,7 +12,6 @@ setup(
     author='Max Kamenkov',
     author_email='mkamenkov@gmail.com',
     description='A Powerful Analytics Python Library for Redis',
-    long_description=open('README.md').read(),
     url='https://github.com/caxap/redis-moment',
     packages=find_packages(),
     install_requires=['redis'],
