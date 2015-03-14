@@ -7,26 +7,26 @@ from .connections import get_connection
 from .collections import BaseCounter
 from .base import BaseHour, BaseDay, BaseWeek, BaseMonth, BaseYear
 
-__all__ = ['COUNTER_NAMESPACE', 'COUNTER_ALIASES', 'update_all', 'Counter',
-           'HourCounter', 'DayCounter', 'WeekCounter', 'MonthCounter',
-           'YearCounter']
+__all__ = ['COUNTER_NAMESPACE', 'COUNTER_ALIASES', 'update_counters',
+           'Counter', 'HourCounter', 'DayCounter', 'WeekCounter',
+           'MonthCounter', 'YearCounter']
 
 
 COUNTER_NAMESPACE = 'cnt'
 
 
-def update_all(counter_names, iterable=None, counter_types=None, dt=None,
-               client='default'):
+def update_counters(counter_names, iterable=None, counter_types=None, dt=None,
+                    client='default'):
     """
     Updates counters for hours, days, weeks and months. Default counter
     type is `Day`.
 
     Examples::
 
-        update_all('counter1', {'value1': 1, 'value2': 1})
-        update_all(['counter1', 'counter2'], {'value1': 2, 'value2': 3})
-        update_all(['counter1', 'counter2'], ['value1', 'value2'])
-        update_all('counter1', 'value1')
+        update_counters('counter1', {'value1': 1, 'value2': 1})
+        update_counters(['counter1', 'counter2'], {'value1': 2, 'value2': 3})
+        update_counters(['counter1', 'counter2'], ['value1', 'value2'])
+        update_counters('counter1', 'value1')
     """
     client = get_connection(client)
 

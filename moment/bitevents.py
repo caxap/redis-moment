@@ -8,29 +8,29 @@ from .collections import BaseSequence
 from .lua import msetbit
 
 
-__all__ = ['EVENT_NAMESPACE', 'EVENT_ALIASES', 'SEQUENCE_NAMESPACE', 'record_all',
-           'delete_temporary_bitop_keys', 'Sequence', 'Event', 'HourEvent',
-           'DayEvent', 'MonthEvent', 'WeekEvent', 'YearEvent', 'Or', 'And', 'Xor',
-           'Not', 'LDiff']
+__all__ = ['EVENT_NAMESPACE', 'EVENT_ALIASES', 'SEQUENCE_NAMESPACE',
+           'record_events', 'delete_temporary_bitop_keys', 'Sequence',
+           'Event', 'HourEvent', 'DayEvent', 'MonthEvent', 'WeekEvent',
+           'YearEvent', 'Or', 'And', 'Xor', 'Not', 'LDiff']
 
 
 EVENT_NAMESPACE = 'evt'
 SEQUENCE_NAMESPACE = 'seq'
 
 
-def record_all(uuids, event_names, event_types=None, dt=None, client='default',
-               sequence=None):
+def record_events(uuids, event_names, event_types=None, dt=None, client='default',
+                  sequence=None):
     """
     Records events for hours, days, weeks and months.
 
     Examples::
 
         seq = Sequence('sequence1')
-        record_all('foo_id', 'event1')
-        record_all('foo_id', 'event1', 'day', sequence=seq)
-        record_all('foo_id', 'event1', MonthEvent, 'sequence1')
-        record_all('foo_id', ['event1', 'event2'], [DayEvent, MonthEvent], seq)
-        record_all('foo_id', ['event1', 'event2'], ['day', 'month'], 'sequence1')
+        record_events('foo_id', 'event1')
+        record_events('foo_id', 'event1', 'day', sequence=seq)
+        record_events('foo_id', 'event1', MonthEvent, 'sequence1')
+        record_events('foo_id', ['event1', 'event2'], [DayEvent, MonthEvent], seq)
+        record_events('foo_id', ['event1', 'event2'], ['day', 'month'], 'sequence1')
     """
     client = get_connection(client)
 

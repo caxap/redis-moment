@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['KEY_PREFIX', '_key']
-
 import calendar
 import inspect
 from datetime import datetime, date, timedelta
@@ -10,10 +8,23 @@ from .connections import get_connection
 from .utils import not_none, add_month, iso_to_gregorian
 
 
+__all__ = ['KEY_PREFIX', '_key', 'Base', 'BaseHour', 'BaseDay', 'BaseMonth',
+           'BaseWeek', 'BaseYear']
+
+
 KEY_PREFIX = 'spm'
 
 
 def _key(name, namespace=None, prefix=KEY_PREFIX, delim=':'):
+    """
+    Generates full redis key with `prefix` and optional `namespace`.
+
+    Example ::
+
+        _key('event', 'ns', 'prefix', '-') == 'prefix-ns-event'
+        _key('event', ns)                  == 'spm:ns:event'
+        _key('event')                      == 'spm:event'
+    """
     return (delim or ':').join(filter(None, [prefix, namespace, name]))
 
 
@@ -61,6 +72,17 @@ class MixinClonable(object):
         return instance
 
 
+class MixinSerializable(object):
+
+    serializer = None
+
+    def dumps(self, value):
+        return self.serializer.dumps(value)
+
+    def loads(self, value):
+        return self.serializer.loads(value)
+
+
 class Base(MixinClonable):
 
     def __init__(self, name, client='default'):
@@ -80,6 +102,9 @@ class Base(MixinClonable):
 
     @property
     def key(self):
+        """
+        Generates full redis key with `prefix` and optional `namespace`.
+        """
         _require_defined(Base, self, 'key_format')
         base_key = self.key_format.format(self=self)
         return _key(base_key, getattr(self, 'namespace', None))
@@ -106,18 +131,6 @@ class Base(MixinClonable):
         return '<%s: %s>' % (self.__class__.__name__, self.key)
 
     __repr__ = __str__
-
-
-class MixinPeriod(object):
-
-    def next(self):
-        return self.delta(value=1)
-
-    def prev(self):
-        return self.delta(value=-1)
-
-    def delta(self, value):
-        _require_defined(MixinPeriod, self, 'delta', 'method')
 
 
 class BaseHour(Base, MixinPeriod):

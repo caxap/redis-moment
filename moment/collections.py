@@ -3,15 +3,14 @@
 
 from __future__ import absolute_import
 
-from .base import Base
+from .base import Base, MixinSerializable
 from .compat import json, lru
 from .lua import (
     sequential_id as _sequential_id, multiset_union_update,
     multiset_intersection_update
 )
 
-
-__all__ = ['SimpleSequence', 'SimpleDict', 'SimpleCounter']
+__all__ = ['BaseSequence', 'BaseDict', 'BaseCounter']
 
 
 _NONE = object()
@@ -26,6 +25,7 @@ class BaseSequence(Base):
 
         seq = Sequence('sequence1')
         sid = seq.sequential_id('foo')
+        sid == 1
         'foo' in seq
     """
     cache_size = None
@@ -85,18 +85,7 @@ class BaseSequence(Base):
         return self.count()
 
 
-class MixinSerializable(object):
-
-    serializer = None
-
-    def dumps(self, value):
-        return self.serializer.dumps(value)
-
-    def loads(self, value):
-        return self.serializer.loads(value)
-
-
-class BaseDict(Base, MixinSerializable):
+class BaseDict(MixinSerializable, Base):
     clonable_attrs = ['serializer']
 
     def __init__(self, name, client='default', serializer=json):
@@ -278,15 +267,3 @@ class BaseCounter(BaseDict):
     def __ior__(self, other):
         self.union_update(other)
         return self
-
-
-class SimpleSequence(BaseSequence):
-    key_format = '{self.name}'
-
-
-class SimpleDict(BaseDict):
-    key_format = '{self.name}'
-
-
-class SimpleCounter(BaseCounter):
-    key_format = '{self.name}'

@@ -37,10 +37,18 @@ class Timeline(Base, MixinSerializable):
     def decode(self, value):
         return value.get('t'), value.get('d')
 
-    def record(self, *items, **kwargs):
+    def add(self, *items, **kwargs):
+        """
+        Add new item to `timeline`
+
+        Examples ::
+
+            tl = Timeline('events')
+            tl.add('event1', 'event2', timestamp=time.time())
+        """
         assert items, 'At least one item should be given.'
 
-        ts = kwargs.pop('timestamp', time.time())
+        ts = kwargs.get('timestamp', time.time())
         args = []
         for item in items:
             args.append(ts)

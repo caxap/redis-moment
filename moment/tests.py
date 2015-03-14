@@ -24,7 +24,7 @@ class TimelineTestCase(unittest.TestCase):
         for i, ts in enumerate(range(self.start_time, self.start_time + 10)):
             item = {'index': i}
             self.items.append((ts, item))
-            self.timeline.record(item, timestamp=ts)
+            self.timeline.add(item, timestamp=ts)
 
     def teardown_timeline(self):
         self.timeline.delete()
