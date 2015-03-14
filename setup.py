@@ -14,7 +14,10 @@ setup(
     description='A Powerful Analytics Python Library for Redis',
     url='https://github.com/caxap/redis-moment',
     packages=find_packages(),
-    install_requires=['redis'],
+    install_requires=[
+        'redis',
+        'msgpack-python>=0.4.6'
+    ],
     zip_safe=False,
     include_package_data=True,
     test_suite='moment.tests',

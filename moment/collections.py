@@ -4,7 +4,7 @@
 from __future__ import absolute_import
 
 from .base import Base, MixinSerializable
-from .compat import json, lru
+from .compat import lru, serializer
 from .lua import (
     sequential_id as _sequential_id, multiset_union_update,
     multiset_intersection_update
@@ -88,7 +88,7 @@ class BaseSequence(Base):
 class BaseDict(MixinSerializable, Base):
     clonable_attrs = ['serializer']
 
-    def __init__(self, name, client='default', serializer=json):
+    def __init__(self, name, client='default', serializer=serializer):
         super(BaseDict, self).__init__(name, client)
         self.serializer = serializer
 

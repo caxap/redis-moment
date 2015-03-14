@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-from .compat import json
+from .compat import serializer
 from .base import Base, BaseHour, BaseDay, BaseWeek, BaseMonth, BaseYear
 from .collections import MixinSerializable
 
@@ -27,7 +27,7 @@ class Timeline(Base, MixinSerializable):
     key_format = '{self.name}'
     clonable_attrs = ['serializer']
 
-    def __init__(self, name, client='default', serializer=json):
+    def __init__(self, name, client='default', serializer=serializer):
         super(Timeline, self).__init__(name, client)
         self.serializer = serializer
 
