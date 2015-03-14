@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-from .compat import serializer
+from . import conf
 from .base import Base, BaseHour, BaseDay, BaseWeek, BaseMonth, BaseYear
 from .collections import MixinSerializable
 
@@ -27,9 +27,9 @@ class Timeline(Base, MixinSerializable):
     key_format = '{self.name}'
     clonable_attrs = ['serializer']
 
-    def __init__(self, name, client='default', serializer=serializer):
+    def __init__(self, name, client='default', serializer=None):
         super(Timeline, self).__init__(name, client)
-        self.serializer = serializer
+        self.serializer = conf.get_serializer(serializer)
 
     def encode(self, data, timestamp):
         return {'d': data, 't': timestamp}

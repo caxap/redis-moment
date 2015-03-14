@@ -3,7 +3,7 @@
 
 import itertools
 from datetime import datetime
-from .connections import get_connection
+from . import conf
 from .collections import BaseCounter
 from .base import BaseHour, BaseDay, BaseWeek, BaseMonth, BaseYear
 
@@ -28,7 +28,7 @@ def update_counters(counter_names, iterable=None, counter_types=None, dt=None,
         update_counters(['counter1', 'counter2'], ['value1', 'value2'])
         update_counters('counter1', 'value1')
     """
-    client = get_connection(client)
+    client = conf.get_connection(client)
 
     if isinstance(counter_names, basestring):
         counter_names = [counter_names]

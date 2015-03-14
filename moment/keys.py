@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import time
+from . import conf
 from .base import (
     _key, Base, MixinSerializable, BaseHour, BaseDay, BaseWeek, BaseMonth,
     BaseYear
 )
-from .compat import serializer
 from .timelines import _totimerange
 
 
@@ -24,9 +24,9 @@ class TimeIndexedKey(MixinSerializable, Base):
     key_format = '{self.name}'
     index_key_format = '{self.name}_index'
 
-    def __init__(self, name, client='default', serializer=serializer):
+    def __init__(self, name, client='default', serializer=None):
         super(TimeIndexedKey, self).__init__(name, client)
-        self.serializer = serializer
+        self.serializer = conf.get_serializer(serializer)
 
     @property
     def index_key(self):

@@ -4,18 +4,13 @@
 import calendar
 import inspect
 from datetime import datetime, date, timedelta
-from .connections import get_connection
+from . import conf
 from .utils import not_none, add_month, iso_to_gregorian
 
-
-__all__ = ['KEY_PREFIX', '_key', 'Base', 'BaseHour', 'BaseDay', 'BaseMonth',
-           'BaseWeek', 'BaseYear']
+__all__ = ['Base', 'BaseHour', 'BaseDay', 'BaseMonth', 'BaseWeek', 'BaseYear']
 
 
-KEY_PREFIX = 'spm'
-
-
-def _key(name, namespace=None, prefix=KEY_PREFIX, delim=':'):
+def _key(name, namespace=None, prefix=None, delim=':'):
     """
     Generates full redis key with `prefix` and optional `namespace`.
 
@@ -25,6 +20,7 @@ def _key(name, namespace=None, prefix=KEY_PREFIX, delim=':'):
         _key('event', ns)                  == 'spm:ns:event'
         _key('event')                      == 'spm:event'
     """
+    prefix = prefix or conf.MOMENT_KEY_PREFIX
     return (delim or ':').join(filter(None, [prefix, namespace, name]))
 
 
@@ -95,7 +91,7 @@ class Base(MixinClonable):
 
         def fset(self, client):
             """ Automatically resolve connection by alias. """
-            self._client = get_connection(client)
+            self._client = conf.get_connection(client)
         return locals()
 
     client = property(**client())

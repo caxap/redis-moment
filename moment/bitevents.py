@@ -2,8 +2,8 @@
 
 import itertools
 from datetime import datetime
-from base import _key, Base, BaseHour, BaseDay, BaseWeek, BaseMonth, BaseYear
-from .connections import get_connection
+from . import conf
+from .base import _key, Base, BaseHour, BaseDay, BaseWeek, BaseMonth, BaseYear
 from .collections import BaseSequence
 from .lua import msetbit
 
@@ -32,7 +32,7 @@ def record_events(uuids, event_names, event_types=None, dt=None, client='default
         record_events('foo_id', ['event1', 'event2'], [DayEvent, MonthEvent], seq)
         record_events('foo_id', ['event1', 'event2'], ['day', 'month'], 'sequence1')
     """
-    client = get_connection(client)
+    client = conf.get_connection(client)
 
     if not isinstance(uuids, (list, tuple, set)):
         uuids = [uuids]
@@ -312,7 +312,7 @@ EVENT_ALIASES = {
 
 def delete_temporary_bitop_keys(client='default', dryrun=False):
     """ Delete all temporary keys that are used when using bit operations. """
-    client = get_connection(client)
+    client = conf.get_connection(client)
     pattertn = '{}:bitop_*'.format(EVENT_NAMESPACE)
     keys = client.keys(_key(pattertn))
     if not dryrun and len(keys) > 0:

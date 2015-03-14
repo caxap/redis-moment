@@ -5,12 +5,12 @@ import time
 import uuid
 import unittest
 
-from . import connections
+from . import conf
 from . import timelines
 from . import keys
 
 
-client = connections.register_connection()
+client = conf.register_connection()
 
 
 ##############################################################################
