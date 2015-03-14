@@ -2,12 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import time
-from .base import _key, Base, MixinSerializable
+from .base import (
+    _key, Base, MixinSerializable, BaseHour, BaseDay, BaseWeek, BaseMonth,
+    BaseYear
+)
 from .compat import serializer
 from .timelines import _totimerange
 
 
-__all__ = ['TIME_INDEX_KEY_NAMESAPCE', 'TimeIndexedKey']
+__all__ = ['TIME_INDEX_KEY_NAMESAPCE', 'TimeIndexedKey', 'HourIndexedKey',
+           'DayIndexedKey', 'WeekIndexedKey', 'MonthIndexedKey',
+           'YearIndexedKey']
 
 
 TIME_INDEX_KEY_NAMESAPCE = 'tik'
@@ -130,3 +135,23 @@ class TimeIndexedKey(MixinSerializable, Base):
         value_key_pattern = self.value_key('*')
         keys = self.client.keys(value_key_pattern)
         self.client.delete(self.index_key, *keys)
+
+
+class HourIndexedKey(BaseHour, TimeIndexedKey):
+    pass
+
+
+class DayIndexedKey(BaseDay, TimeIndexedKey):
+    pass
+
+
+class WeekIndexedKey(BaseWeek, TimeIndexedKey):
+    pass
+
+
+class MonthIndexedKey(BaseMonth, TimeIndexedKey):
+    pass
+
+
+class YearIndexedKey(BaseYear, TimeIndexedKey):
+    pass

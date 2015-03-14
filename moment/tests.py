@@ -159,11 +159,6 @@ class TimeIndexedKeyTestCase(unittest.TestCase):
     def tearDown(self):
         self.teardown_indexed_key()
 
-    def test_key_format(self):
-        self.assertEqual(self.tik.key, 'spm:tik:test')
-        self.assertEqual(self.tik.index_key, 'spm:tik:test_index')
-        self.assertEqual(self.tik.value_key('foo'), 'spm:tik:test:foo')
-
     def test_get_set(self):
         now = int(time.time())
         key = str(uuid.uuid4().hex)[:5]
@@ -270,5 +265,25 @@ class TimeIndexedKeyTestCase(unittest.TestCase):
         self.assertEqual(len(self.tik), len(self.items) - 4)
 
 
-if __name__ == "__main__":
+class HourIndexedKeyTestCase(TimeIndexedKeyTestCase):
+    key_class = keys.HourIndexedKey
+
+
+class DayIndexedKeyTestCase(TimeIndexedKeyTestCase):
+    key_class = keys.DayIndexedKey
+
+
+class WeekIndexedKeyTestCase(TimeIndexedKeyTestCase):
+    key_class = keys.WeekIndexedKey
+
+
+class MonthIndexedKeyTestCase(TimeIndexedKeyTestCase):
+    key_class = keys.MonthIndexedKey
+
+
+class YaerIndexedKeyTestCase(TimeIndexedKeyTestCase):
+    key_class = keys.YearIndexedKey
+
+
+if __name__ == '__main__':
     unittest.main()
