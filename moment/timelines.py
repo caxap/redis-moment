@@ -32,10 +32,10 @@ class Timeline(Base, MixinSerializable):
         self.serializer = serializer
 
     def encode(self, data, timestamp):
-        return {'t': timestamp, 'd': data}
+        return {'d': data, 't': timestamp}
 
     def decode(self, value):
-        return value.get('t'), value.get('d')
+        return value.get('d'), value.get('t')
 
     def add(self, *items, **kwargs):
         """
