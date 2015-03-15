@@ -29,7 +29,7 @@ import pickle
 class pickle_hi:
 
     @staticmethod
-    def loads(val):
-        return pickle.loads(val, pickle.HIGHEST_PROTOCOL)
+    def dumps(val):
+        return pickle.dumps(val, pickle.HIGHEST_PROTOCOL)
 
-    dumps = staticmethod(pickle.dumps)
+    loads = staticmethod(pickle.loads)

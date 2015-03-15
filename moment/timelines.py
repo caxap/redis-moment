@@ -48,13 +48,13 @@ class Timeline(Base, MixinSerializable):
         """
         assert items, 'At least one item should be given.'
 
-        ts = kwargs.get('timestamp', time.time())
+        timestamp = kwargs.get('timestamp') or time.time()
         args = []
         for item in items:
-            args.append(ts)
-            args.append(self.dumps(self.encode(item, ts)))
+            args.append(timestamp)
+            args.append(self.dumps(self.encode(item, timestamp)))
         self.client.zadd(self.key, *args)
-        return ts
+        return timestamp
 
     def timerange(self, start_time=None, end_time=None, limit=None):
         start_time, end_time = _totimerange(start_time, end_time)
