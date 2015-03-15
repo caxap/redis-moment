@@ -53,7 +53,8 @@ class Timeline(Base, MixinSerializable):
         for item in items:
             args.append(ts)
             args.append(self.dumps(self.encode(item, ts)))
-        return self.client.zadd(self.key, *args)
+        self.client.zadd(self.key, *args)
+        return ts
 
     def timerange(self, start_time=None, end_time=None, limit=None):
         start_time, end_time = _totimerange(start_time, end_time)

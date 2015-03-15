@@ -19,6 +19,29 @@ TIME_INDEX_KEY_NAMESAPCE = 'tik'
 
 
 class TimeIndexedKey(MixinSerializable, Base):
+    """
+    Key/value storage where keys indexed by time. This allows you continuously
+    process newly created/updated keys.
+
+    Examples ::
+
+        index = TimeIndexedKey('users')
+
+        # Save users profiles:
+        index.set('uid1', user_data1, update_index=True)
+        index.set('uid2', user_data2, update_index=True)
+
+        # Get user ids added in the last 10 sec. (sorted by time added)
+        result = index.keys(time.time() - 10, limit=2)
+        for uid, timestamp in result:
+            print 'User {0} added at {1}'.format(uid, timestamp)
+
+        # Get assotiated data for these ids
+        result = index.values('uid1', 'uid2')
+        for uid, data in result:
+             print 'User {0} -> {1}'.format(uid, data)
+
+    """
     namespace = TIME_INDEX_KEY_NAMESAPCE
     clonable_attrs = ['serializer']
     key_format = '{self.name}'
@@ -44,7 +67,7 @@ class TimeIndexedKey(MixinSerializable, Base):
         return self.client.exists(value_key)
 
     def __setitem__(self, key, value):
-        self.set(key, value)
+        self.set(key, value, update_index=True)
 
     def __getitem__(self, key):
         value, timestamp = self.get(key)
@@ -57,19 +80,34 @@ class TimeIndexedKey(MixinSerializable, Base):
         if not existed:
             raise KeyError(key)
 
-    def set(self, key, value, timestamp=None, update_index=True):
+    def set(self, key, value, timestamp=None, update_index=None):
+        """ By default we trying to create index if it doesn't exist. """
+
+        # If `update_index` is True force to update index
+        if update_index:
+            return self._set(key, value, timestamp)
+
+        # If `update_index` is None create index if it not exists.
+        index_time = self.client.zscore(self.index_key, key)
+        if index_time is None and update_index is None:
+            return self._set(key, value, timestamp)
+
+        # Else just update assotiated value
         value_key, value = self.value_key(key), self.dumps(value)
-        if not update_index:
-            # TODO: check that index exists
-            return self.client.set(value_key, value)
-        else:
-            timestamp = timestamp or time.time()
-            with self.client.pipeline() as pipe:
-                pipe.multi()
-                pipe.zrem(self.index_key, key)
-                pipe.zadd(self.index_key, timestamp, key)
-                pipe.set(value_key, value)
-                pipe.execute()
+        self.client.set(value_key, value)
+        return index_time
+
+    def _set(self, key, value, timestamp=None):
+        timestamp = timestamp or time.time()
+        value_key, value = self.value_key(key), self.dumps(value)
+
+        with self.client.pipeline() as pipe:
+            pipe.multi()
+            pipe.zrem(self.index_key, key)
+            pipe.zadd(self.index_key, timestamp, key)
+            pipe.set(value_key, value)
+            pipe.execute()
+        return timestamp
 
     def get(self, key):
         value_key = self.value_key(key)
@@ -91,6 +129,17 @@ class TimeIndexedKey(MixinSerializable, Base):
             pipe.zrem(self.index_key, key)
             existed, _ = pipe.execute()
         return existed
+
+    def values(self, *keys):
+        assert keys, 'Al least one key should be given.'
+        value_keys = [self.value_key(k) for k in keys]
+        values = self.client.mget(*value_keys)
+        result = []
+        for key, value in zip(keys, values):
+            if value is not None:
+                value = self.loads(value)
+                result.append((key, value))
+        return result
 
     def keys(self, start_time=None, end_time=None, limit=None,
              with_timestamp=False):

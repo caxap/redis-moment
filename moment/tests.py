@@ -232,6 +232,12 @@ class TimeIndexedKeyTestCase(unittest.TestCase):
         keys2 = [(i[0], i[2]) for i in self.items[1:3]]
         self.assertEqual(keys1, keys2)
 
+    def test_values(self):
+        keys = [k for k, _, _ in self.items]
+        data1 = self.tik.values(*keys)
+        data2 = [(k, v) for k, v, _ in self.items]
+        self.assertEqual(data1, data2)
+
     def test_timerange(self):
         items1 = self.tik.timerange()
         self.assert_ranges_equal(items1, self.items)
