@@ -33,7 +33,7 @@ def get_serializer(alias):
     try:
         return _serializers[alias]
     except KeyError:
-        raise LookupError("Serializer `{}` not configured.".fromat(alias))
+        raise LookupError("Serializer `{}` not configured.".format(alias))
 
 
 _connections = {}

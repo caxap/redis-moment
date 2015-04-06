@@ -169,10 +169,13 @@ class TimeIndexedKey(MixinSerializable, Base):
         keys = self.keys(start_time, end_time)
         value_keys = [self.value_key(k) for k in keys]
 
-        with self.client.pipeline() as pipe:
-            pipe.delete(*value_keys)
-            pipe.zremrangebyscore(self.index_key, start_time, end_time)
-            pipe.execute()
+        if value_keys:
+            with self.client.pipeline() as pipe:
+                pipe.delete(*value_keys)
+                pipe.zremrangebyscore(self.index_key, start_time, end_time)
+                pipe.execute()
+        else:
+            self.client.zremrangebyscore(self.index_key, start_time, end_time)
 
     def has_key(self, key):
         return key in self
